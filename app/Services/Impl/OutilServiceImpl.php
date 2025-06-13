@@ -56,7 +56,8 @@ class OutilServiceImpl implements OutilService
         
         // Récupère la catégorie liée (si existe)
         $category = $outil->category;
-        $categorieCode = strtoupper(substr($category->name ?? 'XX', 0, 4));
+        // $categorieCode = strtoupper(substr($category->name ?? 'XX', 0, 4));
+        $categorieCode = strtoupper(mb_substr($category->name ?? 'XX', 0, 4, 'UTF-8'));
 
         $id = $outil->id;
 
