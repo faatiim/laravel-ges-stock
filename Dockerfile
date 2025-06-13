@@ -1,30 +1,41 @@
-FROM php:8.2-cli
+# Étape 1 : Builder Composer
+FROM composer:2 as vendor
 
-# Installer les extensions utiles pour Laravel + PostgreSQL
+WORKDIR /app
+
+# Copier uniquement les fichiers nécessaires pour installer les dépendances
+COPY composer.json composer.lock ./
+
+# Installer les dépendances sans les packages de dev
+RUN composer install --no-dev --prefer-dist --optimize-autoloader
+
+# Étape 2 : PHP avec FPM (production ready)
+FROM php:8.2-fpm
+
+# Installer les dépendances système
 RUN apt-get update && apt-get install -y \
-    zip unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
-    libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql zip
+    libzip-dev libpng-dev libonig-dev libxml2-dev \
+    zip unzip git curl libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql zip bcmath opcache
 
-# Installer Composer
+# Copier Composer depuis l'image précédente
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Dossier de travail
+# Définir le dossier de travail
 WORKDIR /var/www/html
 
-# Copier les fichiers Laravel
+# Copier tous les fichiers de l'application
 COPY . .
 
-# Installer les dépendances Laravel
-# RUN composer install --no-dev --optimize-autoloader
-RUN composer install --no-dev --optimize-autoloader || { echo "Composer install failed"; exit 1; }
+# Copier le dossier vendor depuis l’étape vendor
+COPY --from=vendor /app/vendor ./vendor
 
+# Donner les bonnes permissions à Laravel
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Donner les bonnes permissions
-RUN chmod -R 755 /var/www/html && chown -R www-data:www-data /var/www/html
+# Port utilisé par Laravel via nginx ou reverse proxy (Render)
+EXPOSE 8000
 
-# Port attendu par Render
-EXPOSE 10000
-
-# Lancer le serveur Laravel
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
+# Lancer php-fpm
+CMD ["php-fpm"]
