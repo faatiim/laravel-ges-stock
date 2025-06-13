@@ -1,0 +1,47 @@
+    .user-settings .avatar img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .user-settings .avatar {
+        position: relative;
+        display: inline-block;
+    }
+
+    .user-settings .avatar .status {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 10px;
+        height: 10px;
+        background-color: #4caf50; /* vert pour online */
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+
+/* 
+    .loogoo {
+        font-family: var(--font-logo);
+        font-size: 34px;
+        color: #000;
+        width: 50px;
+        height: 12px;
+      } */
+
+      .sidebar-bran {
+        display: flex;
+        justify-content: center; /* Centre horizontalement */
+        align-items: center;     /* Centre verticalement si besoin */
+        padding: 10px 0;
+      }
+      
+      .loogoo img {
+        max-width: 150px;  /* taille idéale pour un logo, tu peux ajuster */
+        height: auto;      /* garde le ratio */
+        display: block;    /* évite les marges fantômes */
+      }
+  
