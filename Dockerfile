@@ -1,33 +1,28 @@
-# Étape 1 : PHP avec toutes les extensions nécessaires
-FROM php:8.2-fpm AS app
+FROM php:8.2-cli
 
-# Installer les extensions PHP requises par Laravel
+# Installer extensions requises
 RUN apt-get update && apt-get install -y \
-    zip unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
-    libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql zip bcmath opcache
+    libzip-dev libpng-dev libonig-dev libxml2-dev \
+    zip unzip git curl libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql zip bcmath
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Définir le dossier de travail
+# Dossier de travail
 WORKDIR /var/www/html
 
-# Copier uniquement les fichiers nécessaires pour installer les dépendances
-COPY composer.json composer.lock ./
-
-# Installer les dépendances PHP (maintenant dans l'image PHP avec toutes les extensions)
-RUN composer install --no-dev --prefer-dist --optimize-autoloader
-
-# Étape 2 : Copier le reste du code
+# Copier le projet
 COPY . .
 
-# Permissions Laravel
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 storage bootstrap/cache
+# Installer les dépendances Laravel
+RUN composer install --no-dev --optimize-autoloader
 
-# Expose le port 8000 si derrière nginx ou reverse proxy
-EXPOSE 8000
+# Donner permissions
+RUN chmod -R 755 /var/www/html && chown -R www-data:www-data /var/www/html
 
-# Lancer PHP-FPM (géré par Render/nginx ou autre)
-CMD ["php-fpm"]
+# Exposer le port Laravel par défaut sur Render/Koyeb
+EXPOSE 10000
+
+# Lancer le serveur intégré Laravel
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
