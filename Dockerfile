@@ -1,43 +1,28 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
-# Install system dependencies
+# Installer les extensions utiles pour Laravel + PostgreSQL
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    curl \
-    git \
-    nginx \
-    supervisor \
-    libpq-dev
+    zip unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql zip
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
-
-# Install Composer
+# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www
+# Dossier de travail
+WORKDIR /var/www/html
 
-# Copy app
+# Copier les fichiers Laravel
 COPY . .
 
-# Install dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+# Installer les dépendances Laravel
+RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www
+# Donner les bonnes permissions
+RUN chmod -R 755 /var/www/html && chown -R www-data:www-data /var/www/html
 
-# Copy nginx config (créé à part)
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+# Port attendu par Render
+EXPOSE 10000
 
-# Copy supervisord config
-COPY ./supervisord.conf /etc/supervisord.conf
-
-# Start services
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+# Lancer le serveur Laravel
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
