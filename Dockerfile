@@ -16,7 +16,9 @@ WORKDIR /var/www/html
 COPY . .
 
 # Installer les dépendances Laravel
-RUN composer install --no-dev --optimize-autoloader
+# RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader || { echo "Composer install failed"; exit 1; }
+
 
 # Donner les bonnes permissions
 RUN chmod -R 755 /var/www/html && chown -R www-data:www-data /var/www/html
