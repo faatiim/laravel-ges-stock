@@ -25,22 +25,22 @@ class UserSeeder extends Seeder
         // Permission::create(['name' => 'ges_s']);
 
         // OU 
-        $permissions = [
-            'ges_utilisateurs',
-            'ges_roles',
-            'ges_permissions',
-            'ges_outils',
-            'ges_ventes',
-            'ges_categories', 
-        ];
+        // $permissions = [
+        //     'ges_utilisateurs',
+        //     'ges_roles',
+        //     'g_permissions',
+        //     'ges_outils',
+        //     'ges_ventes',
+        //     'ges_categories', 
+        // ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
-        }
+        // foreach ($permissions as $permission) {
+        //     Permission::firstOrCreate(['name' => $permission]);
+        // }
 
 
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'manager']);
+        // Role::firstOrCreate(['name' => 'adminis']);
+        // Role::firstOrCreate(['name' => 'managers']);
 
         // Vérifie si le rôle admin existe
         $adminRole = Role::firstOrCreate(['name' => 'admin']);

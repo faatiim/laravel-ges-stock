@@ -12,22 +12,21 @@ class AdminUserSeeder extends Seeder
 {
     public function run()
     {
-        Permission::create(['name' => 'ges_utilisateurs']);
-        Permission::create(['name' => 'ges_roles']);
-        Permission::create(['name' => 'ges_permissions']);
-        Permission::create(['name' => 'ges_outils']);
-        Permission::create(['name' => 'ges_ventes']);
-        Permission::create(['name' => 'ges_permissions']);
-        Permission::create(['name' => 'ges_s']);
+        Permission::firstOrCreate(['name' => 'g_utilisateurs']);
+        Permission::firstOrCreate(['name' => 'g_roles']);
+        Permission::firstOrCreate(['name' => 'g_permissions']);
+        Permission::firstOrCreate(['name' => 'g_outils']);
+        Permission::firstOrCreate(['name' => 'g_ventes']);
+        Permission::firstOrCreate(['name' => 'g_factures']);
 
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'manager']);
+        Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'manager']);
 
         $admin = Role::findByName('admin');
-        $admin->givePermissionTo(['ges_utilisateurs', 'ges_roles', 'ges_permissions', 'ges_outils']);
+        $admin->givePermissionTo(['g_utilisateurs', 'g_roles', 'g_permissions', 'g_outils','g_ventes','g_factures']);
 
         $manager = Role::findByName('manager');
-        $manager->givePermissionTo(['ges_outils']);
+        $manager->givePermissionTo(['g_outils','g_ventes','g_factures']);
        
     }
 }

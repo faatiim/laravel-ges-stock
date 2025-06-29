@@ -29,7 +29,7 @@
             </div>
           </li>
 
-          @can('ges_utilisateurs')
+          @can('g_utilisateurs')
             <li class="sidebar-dropdown {{ request()->routeIs('User.*') ? 'active' : '' }}">
               <a href="#">
                   <i class="bi bi-person"></i>
@@ -37,14 +37,14 @@
               </a>
               <div class="sidebar-submenu">
                   <ul>
-                    @can('manage-users')
+                    {{-- @can('manage-users') --}}
                       <li class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
                           <a href="{{ route('users.index') }}">
                               <i class="bi bi-people"></i>
                               <span class="menu-text">Utilisateurs</span>
                           </a>
                       </li>
-                    @endcan
+                    {{-- @endcan --}}
 
                       {{-- <li>
                           <a href="{{ route('users.index') }}"
@@ -127,7 +127,7 @@
             </div>
           </li>
 
-          @can('ges_utilisateurs')
+          @can('g_utilisateurs')
             <li class="sidebar-dropdown {{ request()->routeIs('login.*') ? 'active' : '' }}">
               <a href="#">
                   <i class="bi bi-handbag"></i>
@@ -135,10 +135,13 @@
               </a>
               <div class="sidebar-submenu">
                   <ul>
+                      @can('manage-users')
+
                       <li>
                           <a href="{{ route('login') }}"
                             class="{{ request()->routeIs('login') ? 'current-page' : '' }}">Login</a>
                       </li>
+                      @endcan
                       {{-- <li>
                           <a href="{{ route('password.request') }}"
                             class="{{ request()->routeIs('password.request') ? 'current-page' : '' }}">Mot de passe Oublié</a>
