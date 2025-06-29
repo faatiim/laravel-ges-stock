@@ -21,7 +21,3 @@ EXPOSE 80
 
 # Démarrer nginx + php-fpm via supervisord
 CMD ["/usr/bin/supervisord"]
-
-RUN adduser -D appuser
-USER appuser
-
