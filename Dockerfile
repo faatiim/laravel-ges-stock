@@ -1,8 +1,6 @@
-
-# Utiliser une image de base avec PHP et FPM
 FROM php:8.2-fpm
 
-# Installer les outils nécessaires : nginx, supervisor, git, unzip, etc.
+# Installer dépendances système et extensions PHP requises (dont bcmath)
 RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
@@ -13,32 +11,28 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     zip \
-    && docker-php-ext-install pdo pdo_mysql zip
+    && docker-php-ext-install pdo pdo_mysql zip bcmath
 
-# Installer Composer (officiellement)
+# Copier Composer depuis l'image officielle composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Créer les dossiers nécessaires pour nginx et supervisor
-RUN mkdir -p /run/php /var/log/supervisor
-
-# Définir le dossier de travail
 WORKDIR /var/www/html
 
-# Copier ton code source
+# Copier tous les fichiers de l'application
 COPY . .
 
-# Installer les dépendances PHP avec Composer
+# Installer les dépendances PHP via Composer
 RUN composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
 
-# Donner les bons droits
+# Fixer les droits
 RUN chown -R www-data:www-data /var/www/html
 
-# Copier les fichiers de config
+# Copier les configs nginx et supervisor (à adapter selon tes fichiers)
 COPY nginx.conf /etc/nginx/sites-available/default
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Exposer le port 80
 EXPOSE 80
 
-# Lancer supervisord pour gérer php-fpm + nginx
+# Démarrer supervisord
 CMD ["/usr/bin/supervisord"]
